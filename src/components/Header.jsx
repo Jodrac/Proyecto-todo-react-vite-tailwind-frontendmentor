@@ -10,10 +10,10 @@ const Header = () => {
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add("dark");
-            localStorage.theme = "dark";
+            localStorage.setItem("theme", "dark");
         } else {
             document.documentElement.classList.remove("dark");
-            localStorage.theme = "light";
+            localStorage.setItem("theme", "light");
         }
     }, [darkMode]);
 
