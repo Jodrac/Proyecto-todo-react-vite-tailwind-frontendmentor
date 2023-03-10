@@ -7,7 +7,8 @@ import TodoCreate from "./components/TodoCreate";
 import TodoFilter from "./components/TodoFilter";
 import ToDoList from "./components/TodoList";
 
-const initialStateTodos = JSON.parse(localStorage.getItem("todos") || []);
+const initialStateTodos = JSON.parse(localStorage.getItem("todos")) || [];
+console.log(initialStateTodos);
 
 const reorder = (list, startIndex, endIndex) => {
     const result = [...list];
