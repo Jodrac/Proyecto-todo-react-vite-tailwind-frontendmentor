@@ -1,3 +1,5 @@
+import { DragDropContext } from "@hello-pangea/dnd";
+
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import TodoComputed from "./components/TodoComputed";
@@ -5,36 +7,16 @@ import TodoCreate from "./components/TodoCreate";
 import TodoFilter from "./components/TodoFilter";
 import ToDoList from "./components/TodoList";
 
-//Ejemplos sin localStorage
-// const initialStateTodos = [
-//     {
-//         id: 1,
-//         title: "Do the curse",
-//         completed: true,
-//     },
-//     {
-//         id: 2,
-//         title: "Buy the food",
-//         completed: false,
-//     },
-//     {
-//         id: 3,
-//         title: "Go to the gym",
-//         completed: false,
-//     },
-//     {
-//         id: 4,
-//         title: "Do the streach",
-//         completed: false,
-//     },
-//     {
-//         id: 5,
-//         title: "Complete todo app with Frontend Mentor",
-//         completed: false,
-//     },
-// ];
-
 const initialStateTodos = JSON.parse(localStorage.getItem("todos") || []);
+
+const reorder = (list, startIndex, endIndex) => {
+    const result = [...list];
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+};
+
 const App = () => {
     const [todos, setTodos] = useState(initialStateTodos);
 
@@ -89,6 +71,20 @@ const App = () => {
     };
     const changeFilter = (filter) => setFilter(filter);
 
+    const handleDragEnd = (result) => {
+        const { destination, source } = result;
+        if (!destination) return;
+        if (
+            source.index === destination.index &&
+            source.droppableId === destination.droppableId
+        )
+            return;
+
+        setTodos((prevTask) =>
+            reorder(prevTask, source.index, destination.index)
+        );
+    };
+
     return (
         <div
             className="min-h-screen bg-gray-300 bg-[url('./assets/images/bg-mobile-light.jpg')] bg-contain bg-no-repeat transition-all duration-1000
@@ -100,11 +96,13 @@ const App = () => {
             <main className="container mx-auto mt-8 max-w-xl px-4 ">
                 <TodoCreate createTodo={createTodo}></TodoCreate>
 
-                <ToDoList
-                    todos={filteredTodos()}
-                    removeTodo={removeTodo}
-                    updateTodo={updateTodo}
-                ></ToDoList>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <ToDoList
+                        todos={filteredTodos()}
+                        removeTodo={removeTodo}
+                        updateTodo={updateTodo}
+                    ></ToDoList>
+                </DragDropContext>
 
                 <TodoComputed
                     computedItemsLeft={computedItemsLeft}
